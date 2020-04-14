@@ -3,6 +3,8 @@ package com.mengxuegu.oauth2.resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -11,7 +13,6 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 
 /**
  * 资源服务器相关配置
- *
  */
 @Configuration
 @EnableResourceServer // 标识为资源服务器, 所有发往当前服务的请求，都会去请求头里找token，找不到或验证不通过不允许访问
@@ -22,15 +23,13 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public static final String RESOURCE_ID = "product-server";
 
 
-
     /**
      * 当前资源服务器的一些配置, 如 资源服务器ID
-     *
      */
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.resourceId(RESOURCE_ID)// 配置当前资源服务器的ID, 会在认证服务器验证(客户端表的配置了就可以访问这个服务)
-                    .tokenServices(tokenService()); // 实现令牌服务, ResourceServerTokenServices实例
+                .tokenServices(tokenService()); // 实现令牌服务, ResourceServerTokenServices实例
     }
 
     /**
@@ -54,4 +53,18 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     }
 
 
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+//        super.configure(http);
+        http.sessionManagement()
+                // SpringSecurity 不会创建也不会使用 HttpSession
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                // 资源授权规则
+                .antMatchers("/product/**").hasAuthority("product")
+                // 所有的请求对应访问的用户都要有 all 范围权限
+                .antMatchers("/**").access("#oauth2.hasScope('all')")
+        ;
+    }
 }
