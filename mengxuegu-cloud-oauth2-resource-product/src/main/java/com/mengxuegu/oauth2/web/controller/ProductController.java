@@ -14,7 +14,7 @@ import java.util.List;
 public class ProductController {
 
     @GetMapping("/list")
-    @PreAuthorize("hasAuthority('sys:user:list')")
+//    @PreAuthorize("hasAuthority('sys:user:list')")
     public MengxueguResult list() {
         List<String> list = new ArrayList<>();
         list.add("眼镜");

@@ -57,4 +57,10 @@
 * /oauth/check_token ：用于资源服务器请求端点来检查令牌是否有效, 涉及的类  CheckTokenEndpoint
 * /oauth/confirm_access ：用户确认授权提交, 涉及的类  WhitelabelApprovalEndpoint
 * /oauth/error ：授权服务错误信息, 涉及的类   WhitelabelErrorEndpoint
-* /oauth/token_key ：提供公有密匙的端点，使用 JWT 令牌时会使用 , 涉及的类  TokenKeyEndpoint       
+* /oauth/token_key ：提供公有密匙的端点，使用 JWT 令牌时会使用 , 涉及的类  TokenKeyEndpoint 
+
+### 生成密钥证书文件
+  keytool -genkeypair -alias oauth2 -keyalg RSA -keypass oauth2 -keystore oauth2.jks -storepass oauth2
+  
+### 获取公钥命令
+  keytool -list -rfc --keystore oauth2.jks | openssl x509 -inform pem -pubkey    
