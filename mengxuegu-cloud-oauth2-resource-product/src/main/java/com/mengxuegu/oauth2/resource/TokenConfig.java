@@ -27,7 +27,8 @@ public class TokenConfig {
         ClassPathResource classPathResource = new ClassPathResource("public.txt");
         String publicKey = null;
         try {
-            publicKey = IOUtils.toString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
+//            publicKey = IOUtils.toString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
+            publicKey = IOUtils.toString(classPathResource.getInputStream(), "UTF-8");
             System.out.println("publicKey:" + publicKey);
         } catch (IOException e) {
             e.printStackTrace();
