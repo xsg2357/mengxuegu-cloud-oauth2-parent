@@ -23,8 +23,8 @@ public class TokenConfig {
      * 2. 添加 redis 相关依赖
      * 3. 添加redis 依赖后, 容器就会有 RedisConnectionFactory 实例
      */
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+//    @Autowired
+//    private RedisConnectionFactory redisConnectionFactory;
 
     /**
      * JDBC 管理令牌
