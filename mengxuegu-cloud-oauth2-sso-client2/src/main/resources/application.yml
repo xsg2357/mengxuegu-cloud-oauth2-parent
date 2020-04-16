@@ -4,16 +4,28 @@ server:
 spring:
   thymeleaf:
     cache: false
+  application:
+    name: sso-client2
 security:
   oauth2:
     client:
       client-id: client2
       client-secret: mengxuegu-secret #客户端的密码 一定是明文
-      user-authorization-uri: http://localhost:8090/auth/oauth/authorize #请求认证的地址
-      access-token-uri: http://localhost:8090/auth/oauth/token #请求令牌的地址
+      user-authorization-uri: http://localhost:7001/auth/oauth/authorize #请求认证的地址
+      access-token-uri: http://localhost:7001/auth/oauth/token #请求令牌的地址
     resource:
       jwt:
         # 当用户授权后会带着授权码重定向回客户端 localhost:9001/login?code=xxx
         # 对应/login会自动的去获取令牌，并通过key-uri指定的地址去获取公钥校验令牌有效性，
         # 然后完成本地认证与授权
-        key-uri: http://localhost:8090/auth/oauth/token_key # 获取公钥
+        key-uri: http://localhost:7001/auth/oauth/token_key # 获取公钥
+
+eureka:
+  client:
+    registerWithEureka: true # 服务注册开关
+    fetchRegistry: true # 服务发现开关
+    serviceUrl: # 注册到哪一个Eureka Server服务注册中心，多个中间用逗号分隔
+      defaultZone: http://localhost:6001/eureka
+  instance:
+    instanceId: ${spring.application.name}:${server.port} # 指定实例ID,页面会显示主机名
+    preferIpAddress: true  # 访问路径可以显示IP地址

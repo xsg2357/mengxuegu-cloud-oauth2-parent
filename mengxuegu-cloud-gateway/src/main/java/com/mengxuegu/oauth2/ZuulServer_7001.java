@@ -3,13 +3,16 @@ package com.mengxuegu.oauth2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 
-@EnableEurekaClient // 表示它是一个Eureka的客户端，本服务启动后会自动注册进EurekaSever服务列表中
+
+@EnableZuulProxy //开启zuul 网关的功能
+@EnableEurekaClient // 分布式客户端
 @SpringBootApplication
-public class AuthServerApplication {
+public class ZuulServer_7001 {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthServerApplication.class, args);
+        SpringApplication.run(ZuulServer_7001.class,args);
     }
 
 }

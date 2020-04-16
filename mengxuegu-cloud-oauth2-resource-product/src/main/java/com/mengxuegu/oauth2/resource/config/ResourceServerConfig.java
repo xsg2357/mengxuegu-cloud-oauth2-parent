@@ -1,4 +1,4 @@
-package com.mengxuegu.oauth2.resource;
+package com.mengxuegu.oauth2.resource.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
