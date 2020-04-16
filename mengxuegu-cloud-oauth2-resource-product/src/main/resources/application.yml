@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: product-server
+  mvc:
+    throw-exception-if-no-handler-found: true # 捕获404错误
 eureka:
   client:
     registerWithEureka: true # 服务注册开关

@@ -6,7 +6,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 /**
  * 当前类用于管理所有的资源：  认证服务器资源 产品服务器资源等
@@ -24,8 +26,15 @@ public class ResourceServerConfig {
     //配置当前资源服务器的ID
     private static final String RESOURCE_ID = "product-server";
 
+    @Autowired // token异常处理
+    private OAuth2AuthenticationEntryPoint bootOAuth2AuthExceptionEntryPoint;
+
+    @Autowired // 权限异常处理
+    private AccessDeniedHandler bootAccessDeniedHandler;
+
     @Autowired
     private TokenStore tokenStore;
+
 
 
     // 认证服务器资源拦截
@@ -51,6 +60,9 @@ public class ResourceServerConfig {
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
             resources.resourceId(RESOURCE_ID).tokenStore(tokenStore);
+            // 异常处理
+            resources.authenticationEntryPoint(bootOAuth2AuthExceptionEntryPoint)
+                    .accessDeniedHandler(bootAccessDeniedHandler);
         }
 
         @Override

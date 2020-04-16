@@ -33,6 +33,10 @@ public class MengxueguResult {
         this.message = message;
         this.data = data;
     }
+    public MengxueguResult(Integer code, String message) {
+        this.code = code;
+        this.message = message;
+    }
 
     public static MengxueguResult ok() {
         return new MengxueguResult(null);

@@ -63,4 +63,200 @@
   keytool -genkeypair -alias oauth2 -keyalg RSA -keypass oauth2 -keystore oauth2.jks -storepass oauth2
   
 ### 获取公钥命令
-  keytool -list -rfc --keystore oauth2.jks | openssl x509 -inform pem -pubkey    
+  keytool -list -rfc --keystore oauth2.jks | openssl x509 -inform pem -pubkey  
+  
+### 允许表单登录源码分析
+获取token时需要客户端在Form表单中带上客户端的client_id和client_secret，
+此时的ClientCredentialsTokenEndpointFilter 会去检查client_id和client_secret的合法性，
+如果不合法抛出的异常由其自己在filter内部实例化的OAuth2AuthenticationEntryPoint来处理该异常，
+所以上面定义的BootOAuth2WebResponseExceptionTranslator 捕获不到该异常；看如下源码分析
+```java
+public abstract class AbstractAuthenticationProcessingFilter extends GenericFilterBean
+		implements ApplicationEventPublisherAware, MessageSourceAware {
+	
+	// filter
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+			throws IOException, ServletException {
+
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) res;
+
+		if (!requiresAuthentication(request, response)) {
+			chain.doFilter(request, response);
+
+			return;
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Request is to process authentication");
+		}
+
+		Authentication authResult;
+
+		try {
+			// 调用子类的 attemptAuthentication(request, response) 方法，这里是调用ClientCredentialsTokenEndpointFilter 的attemptAuthentication方法
+			authResult = attemptAuthentication(request, response);
+			if (authResult == null) {
+				// return immediately as subclass has indicated that it hasn't completed
+				// authentication
+				return;
+			}
+			sessionStrategy.onAuthentication(authResult, request, response);
+		}
+		// 客户端信息不合法（client_id不存在或client_secret不正确）抛出的异常，调用unsuccessfulAuthentication方法处理
+		catch (InternalAuthenticationServiceException failed) {
+			logger.error(
+					"An internal error occurred while trying to authenticate the user.",
+					failed);
+			unsuccessfulAuthentication(request, response, failed);
+
+			return;
+		}
+		catch (AuthenticationException failed) {
+			// Authentication failed
+			unsuccessfulAuthentication(request, response, failed);
+
+			return;
+		}
+
+		// Authentication success
+		if (continueChainBeforeSuccessfulAuthentication) {
+			chain.doFilter(request, response);
+		}
+
+		successfulAuthentication(request, response, chain, authResult);
+	}
+
+	
+	
+	
+	public abstract Authentication attemptAuthentication(HttpServletRequest request,
+			HttpServletResponse response) throws AuthenticationException, IOException,
+			ServletException;
+
+	// 登录失败处理
+	protected void unsuccessfulAuthentication(HttpServletRequest request,
+			HttpServletResponse response, AuthenticationException failed)
+			throws IOException, ServletException {
+		SecurityContextHolder.clearContext();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Authentication request failed: " + failed.toString(), failed);
+			logger.debug("Updated SecurityContextHolder to contain null Authentication");
+			logger.debug("Delegating to authentication failure handler " + failureHandler);
+		}
+
+		rememberMeServices.loginFail(request, response);
+		/**
+		* 调用其子类 ClientCredentialsTokenEndpointFilter 的afterPropertiesSet()方法中的设置的onAuthenticationFailure方法,这个地方有点绕，
+		* 自己跑几遍源码看看就能理解了，接下来就是去看ClientCredentialsTokenEndpointFilter 中的实现
+		* */	
+		failureHandler.onAuthenticationFailure(request, response, failed);
+	}
+
+}
+```
+```java
+public class ClientCredentialsTokenEndpointFilter extends AbstractAuthenticationProcessingFilter {
+	// 异常处理
+	private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
+	private boolean allowOnlyPost = false;
+	public ClientCredentialsTokenEndpointFilter() {
+		this("/oauth/token");
+	}
+
+	public ClientCredentialsTokenEndpointFilter(String path) {
+		super(path);
+		setRequiresAuthenticationRequestMatcher(new ClientCredentialsRequestMatcher(path));
+		// If authentication fails the type is "Form"
+		((OAuth2AuthenticationEntryPoint) authenticationEntryPoint).setTypeName("Form");
+	}
+
+	public void setAllowOnlyPost(boolean allowOnlyPost) {
+		this.allowOnlyPost = allowOnlyPost;
+	}
+
+	/**
+	 * @param authenticationEntryPoint the authentication entry point to set
+	 */
+	public void setAuthenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+		this.authenticationEntryPoint = authenticationEntryPoint;
+	}
+
+	// 这个方法在bean初始化时调用
+	@Override
+	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+		setAuthenticationFailureHandler(new AuthenticationFailureHandler() {
+			public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+					AuthenticationException exception) throws IOException, ServletException {
+				if (exception instanceof BadCredentialsException) {
+					exception = new BadCredentialsException(exception.getMessage(), new BadClientCredentialsException());
+				}
+				authenticationEntryPoint.commence(request, response, exception);
+			}
+		});
+		setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() {
+			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+					Authentication authentication) throws IOException, ServletException {
+				// no-op - just allow filter chain to continue to token endpoint
+			}
+		});
+	}
+
+	@Override
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+			throws AuthenticationException, IOException, ServletException {
+		if (allowOnlyPost && !"POST".equalsIgnoreCase(request.getMethod())) {
+			throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" });
+		}
+		String clientId = request.getParameter("client_id");
+		String clientSecret = request.getParameter("client_secret");
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.isAuthenticated()) {
+			return authentication;
+		}
+		if (clientId == null) {
+			throw new BadCredentialsException("No client credentials presented");
+		}
+		if (clientSecret == null) {
+			clientSecret = "";
+		}
+		clientId = clientId.trim();
+		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(clientId,
+				clientSecret);
+		return this.getAuthenticationManager().authenticate(authRequest);
+	}
+
+	@Override
+	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+			FilterChain chain, Authentication authResult) throws IOException, ServletException {
+		super.successfulAuthentication(request, response, chain, authResult);
+		chain.doFilter(request, response);
+	}
+
+	protected static class ClientCredentialsRequestMatcher implements RequestMatcher {
+		private String path;
+		public ClientCredentialsRequestMatcher(String path) {
+			this.path = path;
+		}
+		@Override
+		public boolean matches(HttpServletRequest request) {
+			String uri = request.getRequestURI();
+			int pathParamIndex = uri.indexOf(';');
+			if (pathParamIndex > 0) {
+				// strip everything after the first semi-colon
+				uri = uri.substring(0, pathParamIndex);
+			}
+			String clientId = request.getParameter("client_id");
+			if (clientId == null) {
+				// Give basic auth a chance to work instead (it's preferred anyway)
+				return false;
+			}
+			if ("".equals(request.getContextPath())) {
+				return uri.endsWith(path);
+			}
+			return uri.endsWith(request.getContextPath() + path);
+		}
+	}
+}
+```

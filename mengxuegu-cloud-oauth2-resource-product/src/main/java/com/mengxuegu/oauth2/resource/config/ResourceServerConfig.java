@@ -1,7 +1,6 @@
 package com.mengxuegu.oauth2.resource.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,9 +8,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 /**
  * 资源服务器相关配置
@@ -25,6 +24,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public static final String RESOURCE_ID = "product-server";
 
 
+    @Autowired // token异常处理
+    private OAuth2AuthenticationEntryPoint bootOAuth2AuthExceptionEntryPoint;
+
+    @Autowired // 权限异常处理
+    private AccessDeniedHandler bootAccessDeniedHandler;
+
     @Autowired
     private TokenStore tokenStore;
 
@@ -37,6 +42,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         resources.resourceId(RESOURCE_ID)// 配置当前资源服务器的ID, 会在认证服务器验证(客户端表的配置了就可以访问这个服务)
                 .tokenStore(tokenStore);
 //                .tokenServices(tokenService()); // 实现令牌服务, ResourceServerTokenServices实例
+
+        // 异常处理
+        resources.authenticationEntryPoint(bootOAuth2AuthExceptionEntryPoint)
+                .accessDeniedHandler(bootAccessDeniedHandler);
     }
 
     /*

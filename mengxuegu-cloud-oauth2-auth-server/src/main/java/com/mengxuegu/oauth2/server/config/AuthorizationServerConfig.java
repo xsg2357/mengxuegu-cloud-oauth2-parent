@@ -1,5 +1,6 @@
 package com.mengxuegu.oauth2.server.config;
 
+import com.mengxuegu.oauth2.server.filter.BootBasicAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +16,12 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 import javax.sql.DataSource;
+
 
 @Configuration
 @EnableAuthorizationServer // 开启认证服务器功能
@@ -43,6 +46,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Autowired
     private JwtAccessTokenConverter jwtAccessTokenConverter;
+
+    @Autowired //自定义异常节点
+    private WebResponseExceptionTranslator bootWebResponseExceptionTranslator;
+
+    @Autowired //不能识别网页的过滤器
+    private BootBasicAuthenticationFilter bootBasicAuthenticationFilter;
 
     @Bean // 注意:方法名为clientDetailsService 需要放在dataSource之后
     public ClientDetailsService jdbcClientDetailsService() {
@@ -107,13 +116,21 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         // TokenEndpoint  : Handling error: InvalidRequestException, Missing grant type
         // 刷新令牌的时候需要使用
         endpoints.userDetailsService(customUserDetailsService);
+
+        // 处理 ExceptionTranslationFilter 抛出的异常
+        endpoints.exceptionTranslator(bootWebResponseExceptionTranslator);
         // 令牌redis策略管理
 //        endpoints.tokenStore(tokenStore);
         // 令牌策略管理 jwt转换器
         endpoints.tokenStore(tokenStore).accessTokenConverter(jwtAccessTokenConverter);
 
+
+
         //// 授权码管理策略，针对授权码模式有效，会将授权码放到 auth_code 表，授权后就会删除它
         endpoints.authorizationCodeServices(jdbcAuthorizationCodeServices());
+
+
+
     }
 
 
@@ -122,7 +139,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-//        super.configure(security);
+        //
+        security.addTokenEndpointAuthenticationFilter(bootBasicAuthenticationFilter);
+        // 允许表单登录
+        security.allowFormAuthenticationForClients();
+        //        super.configure(security);
         // 所有人可访问 /oauth/token_key 后面要获取公钥, 默认拒绝访问
         security.tokenKeyAccess("permitAll()");
         // 认证后可访问 /oauth/check_token , 默认拒绝访问
