@@ -1,0 +1,19 @@
+server:
+  port: 9001
+
+spring:
+  thymeleaf:
+    cache: false
+security:
+  oauth2:
+    client:
+      client-id: client1
+      client-secret: mengxuegu-secret
+      user-authorization-uri: http://localhost:8090/auth/oauth/authorize #请求认证的地址
+      access-token-uri: http://localhost:8090/auth/oauth/token #请求令牌的地址
+    resource:
+      jwt:
+        # 当用户授权后会带着授权码重定向回客户端 localhost:9001/login?code=xxx
+        # 对应/login会自动的去获取令牌，并通过key-uri指定的地址去获取公钥校验令牌有效性，
+        # 然后完成本地认证与授权
+        key-uri: http://localhost:8090/auth/oauth/token_key # 获取公钥
