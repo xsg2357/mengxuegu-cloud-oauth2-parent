@@ -14,3 +14,9 @@
 * mengxuegu-cloud-oauth2-resource-product oauth2资源服务器
 * mengxuegu-cloud-oauth2-sso-client1 客户端单点登录1
 * mengxuegu-cloud-oauth2-sso-client2 客户端单点登录2
+
+###  项目工程启动顺序
+* mengxuegu-cloud-eureka
+* mengxuegu-cloud-oauth2-auth-server
+* mengxuegu-cloud-eureka
+* 。。。其他的依次进行

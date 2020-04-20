@@ -57,7 +57,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Bean
     public ResourceServerTokenServices tokenService() {
-        // 资源服务器去远程认证服务器验证 token 是否有效
+        // 资源服务器去远程认证服务器验证 token
+        *
+        *
+        *
         RemoteTokenServices service = new RemoteTokenServices();
         // 请求认证服务器验证URL，注意：默认这个端点是拒绝访问的，要设置认证后可访问
         service.setCheckTokenEndpointUrl("http://localhost:8090/auth/oauth/check_token");

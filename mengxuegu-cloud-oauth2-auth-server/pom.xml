@@ -16,6 +16,11 @@
             <artifactId>mengxuegu-cloud-oauth2-base</artifactId>
             <version>${mengxuegu-security.version}</version>
         </dependency>
+        <!--图形验证码 -->
+        <dependency>
+            <groupId>com.github.penggle</groupId>
+            <artifactId>kaptcha</artifactId>
+        </dependency>
         <!--spring mvc相关的-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
