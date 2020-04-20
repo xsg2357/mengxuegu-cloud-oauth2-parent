@@ -16,7 +16,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
  * 资源服务器相关配置
  */
 @EnableResourceServer // 标识为资源服务器, 所有发往当前服务的请求，都会去请求头里找token，找不到或验证不通过不允许访问
-@EnableGlobalMethodSecurity(prePostEnabled = true) // 开启方法级权限控制
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true) // 开启方法级权限控制
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     //配置当前资源服务器的ID

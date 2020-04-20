@@ -1,9 +1,3 @@
-
-
-menggxuegu:
-  cloud:
-    clientId: mengxuegu-pc
-    clientSecret: mengxuegu-secret
 server:
   port: 8081
 spring:
@@ -22,3 +16,8 @@ eureka:
   instance:
     instanceId: ${spring.application.name}:${server.port} # 指定实例ID,页面会显示主机名
     preferIpAddress: true  # 访问路径可以显示IP地址
+menggxuegu:
+  cloud:
+    cloudClientDetail:
+      clientId: mengxuegu-pc
+      clientSecret: mengxuegu-secret
