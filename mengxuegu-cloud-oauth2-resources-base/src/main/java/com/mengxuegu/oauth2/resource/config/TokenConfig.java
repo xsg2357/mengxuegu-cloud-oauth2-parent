@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class TokenConfig {

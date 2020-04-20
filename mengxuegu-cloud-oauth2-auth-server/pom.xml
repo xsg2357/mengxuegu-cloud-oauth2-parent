@@ -93,7 +93,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <!--启动类配置-->
                 <configuration>
-                    <mainClass>com.mengxuegu.oauth2.AuthServerApplication</mainClass>
+                    <mainClass>com.mengxuegu.com.mengxuegu.oauth2.AuthServerApplication</mainClass>
                 </configuration>
 
             </plugin>

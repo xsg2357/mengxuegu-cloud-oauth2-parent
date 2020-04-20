@@ -1,8 +1,14 @@
+
+
+menggxuegu:
+  cloud:
+    clientId: mengxuegu-pc
+    clientSecret: mengxuegu-secret
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
-    name: product-server
+    name: user-server
   mvc:
     throw-exception-if-no-handler-found: true # 捕获404错误
   main:

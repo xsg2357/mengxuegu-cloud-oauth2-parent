@@ -4,8 +4,6 @@ import com.mengxuegu.base.result.MengxueguResult;
 import com.mengxuegu.oauth2.resource.utils.HttpUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 

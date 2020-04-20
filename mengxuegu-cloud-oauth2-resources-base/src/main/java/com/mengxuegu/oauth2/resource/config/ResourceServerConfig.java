@@ -15,7 +15,6 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 /**
  * 资源服务器相关配置
  */
-@Configuration
 @EnableResourceServer // 标识为资源服务器, 所有发往当前服务的请求，都会去请求头里找token，找不到或验证不通过不允许访问
 @EnableGlobalMethodSecurity(prePostEnabled = true) // 开启方法级权限控制
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
@@ -72,21 +71,21 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     }*/
 
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
-        // hasAuthority("sys:user:list") 这里权限一定要与校验的接口里面的权限一定要一致
-        //        super.configure(http);
-        http.sessionManagement()
-                // SpringSecurity 不会创建也不会使用 HttpSession
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                // 资源授权规则
-                .antMatchers("/product/**").hasAuthority("sys:user:list")
-//                .antMatchers("/product/**").hasAuthority("product")
-                // 所有的请求对应访问的用户都要有 all 范围权限
-                .antMatchers("/**").access("#oauth2.hasScope('all')")
-        ;
-    }
+//    @Override
+//    public void configure(HttpSecurity http) throws Exception {
+//        // hasAuthority("sys:user:list") 这里权限一定要与校验的接口里面的权限一定要一致
+//        //        super.configure(http);
+//        http.sessionManagement()
+//                // SpringSecurity 不会创建也不会使用 HttpSession
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .authorizeRequests()
+//                // 资源授权规则
+//                .antMatchers("/product/**").hasAuthority("sys:user:list")
+////                .antMatchers("/product/**").hasAuthority("product")
+//                // 所有的请求对应访问的用户都要有 all 范围权限
+//                .antMatchers("/**").access("#oauth2.hasScope('all')")
+//        ;
+//    }
 }
 

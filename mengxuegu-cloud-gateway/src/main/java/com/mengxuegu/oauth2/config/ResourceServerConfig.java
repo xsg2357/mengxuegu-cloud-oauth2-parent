@@ -74,4 +74,25 @@ public class ResourceServerConfig {
         }
     }
 
+
+    // 用户资源服务器资源拦截
+    @Configuration
+    @EnableResourceServer
+    public class UserResourceServerConfig extends ResourceServerConfigurerAdapter {
+        @Override
+        public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+            resources.resourceId(RESOURCE_ID).tokenStore(tokenStore);
+            // 异常处理
+            resources.authenticationEntryPoint(bootOAuth2AuthExceptionEntryPoint)
+                    .accessDeniedHandler(bootAccessDeniedHandler);
+        }
+
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            // 客户端要有 PRODUCT_API 范围才可访问
+            http.authorizeRequests()
+                    .antMatchers("/user/**").permitAll();
+        }
+    }
+
 }
