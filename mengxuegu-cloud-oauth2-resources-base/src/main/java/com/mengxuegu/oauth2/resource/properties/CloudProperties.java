@@ -3,8 +3,8 @@ package com.mengxuegu.oauth2.resource.properties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+//对象字段一定要与yml里面写成一致  不然对象会获取NULL
 @Component
-//@PropertySource("classpath:application.yml") //定义要读取的配置文件的位置
 @ConfigurationProperties(prefix = "mengxuegu.cloud")
 public class CloudProperties {
 

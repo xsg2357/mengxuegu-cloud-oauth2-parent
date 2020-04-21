@@ -1,5 +1,11 @@
 server:
   port: 8081
+  servlet:
+    session:
+      cookie:
+        name: OAUTH2SESSION
+
+
 spring:
   application:
     name: user-server
@@ -16,8 +22,17 @@ eureka:
   instance:
     instanceId: ${spring.application.name}:${server.port} # 指定实例ID,页面会显示主机名
     preferIpAddress: true  # 访问路径可以显示IP地址
-menggxuegu:
+mengxuegu:
   cloud:
     cloudClientDetail:
       clientId: mengxuegu-pc
       clientSecret: mengxuegu-secret
+
+#security:
+#  oauth2:
+#    client:
+#      pre-established-redirect-uri: http://localhost:8090/auth/callback
+#      client-id: mengxuegu-pc
+#      client-secret: mengxuegu-secret
+#      user-authorization-uri: http://localhost:8090/auth/oauth/authorize
+#      access-token-uri: http://localhost:8090/auth/oauth/token

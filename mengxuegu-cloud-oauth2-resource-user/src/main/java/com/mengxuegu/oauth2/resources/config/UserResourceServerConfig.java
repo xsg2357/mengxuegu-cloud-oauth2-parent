@@ -12,5 +12,6 @@ public class UserResourceServerConfig extends ResourceServerConfig {
 //        super.configure(http);
         http.authorizeRequests()
                 .antMatchers("/user/**").permitAll();
+        http.anonymous().disable();
     }
 }
