@@ -4,7 +4,6 @@ import com.mengxuegu.base.result.MengxueguResult;
 import com.mengxuegu.oauth2.resource.properties.CloudClientDetails;
 import com.mengxuegu.oauth2.resource.properties.CloudProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

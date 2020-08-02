@@ -30,6 +30,7 @@ spring:
 mybatis-plus:
   # 指定实体类所有包
   type-aliases-package: com.mengxuegu.oauth2.web.entities
+  mapper-locations: classpath*:mapper/*.xml
 
 # 日志级别，会打印sql语句
 logging:
@@ -62,3 +63,7 @@ mengxuegu:
       mobileCodeUrl: /code/mobile # 发送手机验证码 url
 #      mobilePage: /mobile/page # 前往手机登录页面地址
       tokenValiditySeconds: 604800 # 记住我有效时长，单位秒， 注意不要用乘法*，会被认为字符串
+  cloud:
+    cloudClientDetail:
+      clientId: mengxuegu-pc
+      clientSecret: mengxuegu-secret

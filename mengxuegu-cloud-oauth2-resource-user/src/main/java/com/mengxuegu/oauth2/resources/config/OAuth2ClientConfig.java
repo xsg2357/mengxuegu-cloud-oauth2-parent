@@ -21,38 +21,38 @@ import java.util.List;
 @EnableOAuth2Client
 public class OAuth2ClientConfig {
 
-    @Autowired
-    private CloudProperties cloudProperties;
+//    @Autowired
+//    private CloudProperties cloudProperties;
 
-
-    @Bean
-    protected OAuth2ProtectedResourceDetails resource() {
-        ResourceOwnerPasswordResourceDetails resource;
-        resource = new ResourceOwnerPasswordResourceDetails();
-
-        List<String> scopes = new ArrayList<>(2);
-        scopes.add("write");
-        scopes.add("read");
-        resource.setAccessTokenUri("http://localhost:8090/auth/oauth/token");
-        resource.setClientId(cloudProperties.getCloudClientDetail().getClientId());
-        resource.setClientSecret(cloudProperties.getCloudClientDetail().getClientSecret());
-        resource.setGrantType("password");
-        resource.setScope(scopes);
-        resource.setUsername("**USERNAME**");
-        resource.setPassword("**PASSWORD**");
-        return resource;
-    }
-
-    @Bean
-    public OAuth2RestTemplate restTemplate() {
-        AccessTokenRequest atr = new DefaultAccessTokenRequest();
-        return new OAuth2RestTemplate(resource(), new DefaultOAuth2ClientContext(atr));
-    }
 
 //    @Bean
-//    public OAuth2RestTemplate restTemplate(UserInfoRestTemplateFactory factory) {
-//        return factory.getUserInfoRestTemplate();
+//    protected OAuth2ProtectedResourceDetails resource() {
+//        ResourceOwnerPasswordResourceDetails resource;
+//        resource = new ResourceOwnerPasswordResourceDetails();
+//
+//        List<String> scopes = new ArrayList<>(2);
+//        scopes.add("write");
+//        scopes.add("read");
+//        resource.setAccessTokenUri("http://localhost:8090/auth/oauth/token");
+//        resource.setClientId(cloudProperties.getCloudClientDetail().getClientId());
+//        resource.setClientSecret(cloudProperties.getCloudClientDetail().getClientSecret());
+//        resource.setGrantType("password");
+//        resource.setScope(scopes);
+//        resource.setUsername("**USERNAME**");
+//        resource.setPassword("**PASSWORD**");
+//        return resource;
 //    }
+
+//    @Bean
+//    public OAuth2RestTemplate restTemplate() {
+//        AccessTokenRequest atr = new DefaultAccessTokenRequest();
+//        return new OAuth2RestTemplate(resource(), new DefaultOAuth2ClientContext(atr));
+//    }
+
+    @Bean
+    public OAuth2RestTemplate restTemplate(UserInfoRestTemplateFactory factory) {
+        return factory.getUserInfoRestTemplate();
+    }
 
 
 }
