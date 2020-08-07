@@ -1,0 +1,79 @@
+server:
+  port: 8089
+
+logging:
+  level:
+    root: WARN
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-client-1:
+            client-id: my-client-1
+            client-secret: 12345678
+            client-name: ABC
+            provider: my-oauth-provider
+            scope: read
+            redirect-uri-template: http://localhost:8081/login/oauth2/code/callback
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+        provider:
+          my-oauth-provider:
+            authorization-uri: http://localhost:8080/oauth/authorize
+            token-uri: http://localhost:8080/oauth/token
+
+
+#external:
+#  uri: https://external_url
+#spring:
+#  http:
+#    log-request-details: true
+#  security:
+#    oauth2:
+#      client:
+#        provider:
+#          idam:
+#            token-uri: http://localhost:8090/auth/oauth/token
+#        registration:
+#          idam:
+#            client-id: mengxuegu-pc
+#            client-secret: mengxuegu-pc
+#            authorization-grant-type: client_credentials
+
+
+#spring:
+#  thymeleaf:
+#    cache: false
+#
+#security:
+#  oauth2:
+#    client:
+#      messaging-client-auth-code:
+#        client-id: messaging-client
+#        client-secret: secret
+#        grant-type: authorization_code
+#        user-authorization-uri: http://auth-server:8090/auth/oauth/authorize
+#        access-token-uri: http://auth-server:8090/auth/oauth/token
+#        scope: message.read, message.write
+#        pre-established-redirect-uri: http://localhost:8080/authorized
+#        use-current-uri: false
+#      messaging-client-client-creds:
+#        client-id: messaging-client
+#        client-secret: secret
+#        grant-type: client_credentials
+#        access-token-uri: http://localhost:8090/auth/oauth/token
+#        scope: message.read, message.write
+#      messaging-client-password:
+#        client-id: mengxuegu-pc
+#        client-secret: mengxuegu-secret
+#        grant-type: password
+#        access-token-uri: http://localhost:8090/auth/oauth/token
+#        scope: message.read, message.write
+#
+#messages:
+#  base-uri: http://localhost:8092/messages

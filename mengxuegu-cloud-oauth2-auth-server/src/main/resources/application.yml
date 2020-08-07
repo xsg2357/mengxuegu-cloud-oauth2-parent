@@ -67,3 +67,5 @@ mengxuegu:
     cloudClientDetail:
       clientId: mengxuegu-pc
       clientSecret: mengxuegu-secret
+messages:
+  base-uri: http://localhost:8090/auth/messages
